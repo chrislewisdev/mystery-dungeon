@@ -1,8 +1,10 @@
 #include <nds.h>
+#include <stdio.h>
 #include <vector>
 #include <queue>
 #include <map>
 #include "map.h"
+#include "character.h"
 
 class Vec2 {
     public: int x, y;
@@ -108,10 +110,14 @@ class Renderer {
             videoSetModeSub(MODE_0_2D);
 
             vramSetBankA(VRAM_A_MAIN_BG);
+            vramSetBankB(VRAM_B_MAIN_SPRITE);
+
+            oamInit(&oamMain, SpriteMapping_1D_32, false);
 
             backgroundId = bgInit(0, BgType_Text4bpp, BgSize_T_256x256, 0, 1);
 
             dmaCopy(palette.source, BG_PALETTE, palette.size);
+            dmaCopy(palette.source, SPRITE_PALETTE, palette.size);
             dmaCopy(tiles.source, bgGetGfxPtr(backgroundId), tiles.size);
         }
         void render(GameState& gameState) {
@@ -125,11 +131,13 @@ class Renderer {
             for (Character& character : gameState.getCharacters()) {
                 int oamId = oamRepository.getOrAllocateOamId(character.getId());
                 u16* sprite = spriteRepository.getSprite(character.getType());
-                // oamSet...
+                oamSet(&oamMain, oamId, 64, 32, 0, 0, SpriteSize_16x16, SpriteColorFormat_16Color, sprite, 0, false, false, false, false, false);
             }
 
             // Render game world (bottom screen?)
             // Render HUD (top screen?)
+
+            oamUpdate(&oamMain);
         }
 };
 
@@ -138,13 +146,19 @@ int main() {
     MemoryBlock palette(mapPal, mapPalLen);
     MemoryBlock tiles(mapTiles, mapTilesLen);
     MemoryBlock mapData(mapMap, mapMapLen);
+    MemoryBlock character(characterTiles, characterTilesLen);
     
     GameState gameState;
     gameState.getMap().load(mapData);
+    gameState.getCharacters().push_back(Character(0, 0));
 
     Renderer renderer(&oamMain);
     renderer.init(palette, tiles);
-    // renderer.getSpriteRepository().loadSprite();
+    renderer.getSpriteRepository().loadSprite(0, character);
+
+    // TODO: Devise a more refined method for debug output once sub display is utilised
+    consoleDemoInit();
+    iprintf("Hello world!");
 
     while (true) {
         // TODO: Abstract into app states for separation between game/menu logic?
