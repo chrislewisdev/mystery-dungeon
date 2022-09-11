@@ -4,7 +4,9 @@
 #include <queue>
 #include <map>
 #include "map.h"
+#include "palette.h"
 #include "character.h"
+#include "colours.h"
 
 #define TILE_SIZE 16
 
@@ -116,7 +118,7 @@ class Renderer {
     public:
         Renderer(OamState* oamMain) : spriteRepository(oamMain) {}
         SpriteRepository& getSpriteRepository() { return spriteRepository; }
-        void init(const MemoryBlock& palette, const MemoryBlock& tiles){
+        void init(const MemoryBlock& bgPalette, const MemoryBlock& spritePalette, const MemoryBlock& tiles){
             videoSetMode(MODE_0_2D);
             videoSetModeSub(MODE_0_2D);
 
@@ -127,8 +129,8 @@ class Renderer {
 
             backgroundId = bgInit(0, BgType_Text4bpp, BgSize_T_256x256, 0, 1);
 
-            dmaCopy(palette.source, BG_PALETTE, palette.size);
-            dmaCopy(palette.source, SPRITE_PALETTE, palette.size);
+            dmaCopy(bgPalette.source, BG_PALETTE, bgPalette.size);
+            dmaCopy(spritePalette.source, SPRITE_PALETTE, spritePalette.size);
             dmaCopy(tiles.source, bgGetGfxPtr(backgroundId), tiles.size);
         }
         void render(GameState& gameState) {
@@ -160,20 +162,23 @@ class Renderer {
 
 int main() {
     // Placeholder map data
-    MemoryBlock palette(mapPal, mapPalLen);
+    MemoryBlock spritePalette(palettePal, palettePalLen);
+    MemoryBlock bgPalette(mapPal, mapPalLen);
     MemoryBlock tiles(mapTiles, mapTilesLen);
     MemoryBlock mapData(mapMap, mapMapLen);
     MemoryBlock character(characterTiles, characterTilesLen);
+    MemoryBlock colours(coloursTiles, coloursTilesLen);
     
     GameState gameState;
     gameState.getMap().load(mapData);
     gameState.spawnAt(0, 4, 4);
     gameState.spawnAt(0, 8, 4);
-    gameState.spawnAt(0, 0, 0);
+    gameState.spawnAt(1, 0, 0);
 
     Renderer renderer(&oamMain);
-    renderer.init(palette, tiles);
+    renderer.init(bgPalette, spritePalette, tiles);
     renderer.getSpriteRepository().loadSprite(0, character);
+    renderer.getSpriteRepository().loadSprite(1, colours);
 
     // TODO: Devise a more refined method for debug output once sub display is utilised
     consoleDemoInit();
