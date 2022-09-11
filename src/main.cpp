@@ -6,6 +6,8 @@
 #include "map.h"
 #include "character.h"
 
+#define TILE_SIZE 16
+
 class Vec2 {
     public: int x, y;
 };
@@ -26,6 +28,8 @@ class Character {
         Character(int id, int type) : id(id), type(type) {}
         int getId() { return id; }
         int getType() { return type; }
+        Vec2 getLocation() { return location; }
+        void setLocation(int x, int y) { location.x = x; location.y = y; }
 };
 
 class Map {
@@ -50,9 +54,15 @@ class GameState {
         Map map;
         std::vector<Character> characters;
         int turnIndex = 0;
+        int idCounter = 0;
     public:
         Map& getMap() { return map; }
         std::vector<Character>& getCharacters() { return characters; }
+        void spawnAt(int type, int x, int y) {
+            Character character(idCounter++, type);
+            character.setLocation(x, y);
+            characters.push_back(character);
+        }
         void update() {}
 };
 
@@ -70,6 +80,7 @@ class OamRepository {
             if (oamAllocations.find(characterId) != oamAllocations.end()) {
                 return oamAllocations.at(characterId);
             } else {
+                // TODO: Handle no available ids
                 int oamId = availableOamIds.front();
                 availableOamIds.pop();
                 oamAllocations[characterId] = oamId;
@@ -121,6 +132,8 @@ class Renderer {
             dmaCopy(tiles.source, bgGetGfxPtr(backgroundId), tiles.size);
         }
         void render(GameState& gameState) {
+            consoleClear();
+
             // Update map data if changed
             Map& map = gameState.getMap();
             if (map.getMapVersion() > latestMapVersion) {
@@ -130,8 +143,12 @@ class Renderer {
 
             for (Character& character : gameState.getCharacters()) {
                 int oamId = oamRepository.getOrAllocateOamId(character.getId());
+                iprintf("%d\n", oamId);
                 u16* sprite = spriteRepository.getSprite(character.getType());
-                oamSet(&oamMain, oamId, 64, 32, 0, 0, SpriteSize_16x16, SpriteColorFormat_16Color, sprite, 0, false, false, false, false, false);
+                Vec2 location = character.getLocation();
+                oamSet(&oamMain, oamId,
+                    location.x * TILE_SIZE, location.y * TILE_SIZE,
+                    0, 0, SpriteSize_16x16, SpriteColorFormat_16Color, sprite, 0, false, false, false, false, false);
             }
 
             // Render game world (bottom screen?)
@@ -150,7 +167,9 @@ int main() {
     
     GameState gameState;
     gameState.getMap().load(mapData);
-    gameState.getCharacters().push_back(Character(0, 0));
+    gameState.spawnAt(0, 4, 4);
+    gameState.spawnAt(0, 8, 4);
+    gameState.spawnAt(0, 0, 0);
 
     Renderer renderer(&oamMain);
     renderer.init(palette, tiles);
@@ -158,7 +177,6 @@ int main() {
 
     // TODO: Devise a more refined method for debug output once sub display is utilised
     consoleDemoInit();
-    iprintf("Hello world!");
 
     while (true) {
         // TODO: Abstract into app states for separation between game/menu logic?

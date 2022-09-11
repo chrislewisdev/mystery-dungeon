@@ -13,6 +13,9 @@ GFXH = $(GFX:gfx/%.png=build/%.h)
 OFILES = $(SRC:src/%.cpp=build/%.o)
 OFILES += $(GFX:gfx/%.png=build/%.o)
 
+# Stop make removing generated .h files after build
+.PRECIOUS: build/%.h
+
 # Converts our .elf file into a proper nds rom using ndstool, setting some metadata options.
 build/$(ROM).nds: build/$(ROM).elf
 	ndstool -c ./build/$(ROM).nds -9 ./build/$(ROM).elf \
