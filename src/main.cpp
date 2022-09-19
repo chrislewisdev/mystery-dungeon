@@ -6,12 +6,11 @@
 #include "map.h"
 #include "palette.h"
 #include "character.h"
-#include "colours.h"
 
 #define TILE_SIZE 16
 
-class Vec2 {
-    public: int x, y;
+struct Vec2 {
+    int x, y;
 };
 
 struct MemoryBlock {
@@ -20,6 +19,53 @@ struct MemoryBlock {
 
     MemoryBlock(const void* source, const uint32 size) : source(source), size(size) {}
 };
+
+struct InputState {
+    bool a, b, x, y;
+    bool up, down, left, right;
+    bool leftBumper, rightBumper;
+    bool start, select;
+
+    static InputState getInputState() {
+        scanKeys();
+        uint32 input = keysCurrent();
+        return InputState{
+            .a              = (input & KEY_A) != 0,
+            .b              = (input & KEY_B) != 0,
+            .x              = (input & KEY_X) != 0,
+            .y              = (input & KEY_Y) != 0,
+            .up             = (input & KEY_UP) != 0,
+            .down           = (input & KEY_DOWN) != 0,
+            .left           = (input & KEY_LEFT) != 0,
+            .right          = (input & KEY_RIGHT) != 0,
+            .leftBumper     = (input & KEY_L) != 0,
+            .rightBumper    = (input & KEY_R) != 0,
+            .start          = (input & KEY_START) != 0,
+            .select         = (input & KEY_SELECT) != 0,
+        };
+    }
+
+    void printState() {
+        iprintf("A:%d,B:%d,X:%d,Y:%d\nU:%d,D:%d,L:%d,R:%d\nLB:%d,RB:%d\nSTART:%d,SEL:%d",
+            a, b, x, y,
+            up, down, left, right,
+            leftBumper, rightBumper,
+            start, select
+        );
+    }
+};
+
+// class Command {
+//     protected:
+//         const Character* target;
+//         Command(Character *character) : character(character) {}
+//     public:
+//         virtual void apply() = 0;
+// };
+
+// class Controller {
+
+// };
 
 class Character {
     private:
@@ -65,7 +111,9 @@ class GameState {
             character.setLocation(x, y);
             characters.push_back(character);
         }
-        void update() {}
+        void update(InputState& inputState) {
+            inputState.printState();
+        }
 };
 
 class OamRepository {
@@ -109,14 +157,14 @@ class SpriteRepository {
         }
 };
 
-class Renderer {
+class GameRenderer {
     private:
         int backgroundId = 0;
         u16 latestMapVersion = 0;
         OamRepository oamRepository;
         SpriteRepository spriteRepository;
     public:
-        Renderer(OamState* oamMain) : spriteRepository(oamMain) {}
+        GameRenderer(OamState* oamMain) : spriteRepository(oamMain) {}
         SpriteRepository& getSpriteRepository() { return spriteRepository; }
         void init(const MemoryBlock& bgPalette, const MemoryBlock& spritePalette, const MemoryBlock& tiles){
             videoSetMode(MODE_0_2D);
@@ -134,8 +182,6 @@ class Renderer {
             dmaCopy(tiles.source, bgGetGfxPtr(backgroundId), tiles.size);
         }
         void render(GameState& gameState) {
-            consoleClear();
-
             // Update map data if changed
             Map& map = gameState.getMap();
             if (map.getMapVersion() > latestMapVersion) {
@@ -144,6 +190,7 @@ class Renderer {
             }
 
             for (Character& character : gameState.getCharacters()) {
+                // TODO: camera culling
                 int oamId = oamRepository.getOrAllocateOamId(character.getId());
                 iprintf("%d\n", oamId);
                 u16* sprite = spriteRepository.getSprite(character.getType());
@@ -152,6 +199,7 @@ class Renderer {
                     location.x * TILE_SIZE, location.y * TILE_SIZE,
                     0, 0, SpriteSize_16x16, SpriteColorFormat_16Color, sprite, 0, false, false, false, false, false);
             }
+            // TODO: Release oam ids for things no longer displayed
 
             // Render game world (bottom screen?)
             // Render HUD (top screen?)
@@ -167,25 +215,24 @@ int main() {
     MemoryBlock tiles(mapTiles, mapTilesLen);
     MemoryBlock mapData(mapMap, mapMapLen);
     MemoryBlock character(characterTiles, characterTilesLen);
-    MemoryBlock colours(coloursTiles, coloursTilesLen);
     
     GameState gameState;
     gameState.getMap().load(mapData);
     gameState.spawnAt(0, 4, 4);
-    gameState.spawnAt(0, 8, 4);
-    gameState.spawnAt(1, 0, 0);
 
-    Renderer renderer(&oamMain);
+    GameRenderer renderer(&oamMain);
     renderer.init(bgPalette, spritePalette, tiles);
     renderer.getSpriteRepository().loadSprite(0, character);
-    renderer.getSpriteRepository().loadSprite(1, colours);
 
     // TODO: Devise a more refined method for debug output once sub display is utilised
     consoleDemoInit();
 
     while (true) {
         // TODO: Abstract into app states for separation between game/menu logic?
-        gameState.update();
+        consoleClear();
+
+        InputState inputState = InputState::getInputState();
+        gameState.update(inputState);
         swiWaitForVBlank();
         renderer.render(gameState);
     }
