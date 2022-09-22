@@ -1,9 +1,9 @@
 #pragma once
 
 #include <vector>
-#include "Character.h"
-#include "InputState.h"
-#include "Map.h"
+#include "Core/InputState.h"
+#include "Game/Character.h"
+#include "Game/Map.h"
 
 class GameState {
     private:

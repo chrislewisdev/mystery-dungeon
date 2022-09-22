@@ -5,10 +5,10 @@
 #include <queue>
 #include <map>
 // Internal
-#include "InputState.h"
-#include "MemoryBlock.h"
-#include "GameState.h"
-#include "GameRenderer.h"
+#include "Core/InputState.h"
+#include "Core/MemoryBlock.h"
+#include "Game/GameState.h"
+#include "Graphics/GameRenderer.h"
 // GFX
 #include "map.h"
 #include "palette.h"

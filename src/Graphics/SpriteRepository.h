@@ -2,7 +2,7 @@
 
 #include <nds.h>
 #include <map>
-#include "MemoryBlock.h"
+#include "Core/MemoryBlock.h"
 
 class SpriteRepository {
     private:

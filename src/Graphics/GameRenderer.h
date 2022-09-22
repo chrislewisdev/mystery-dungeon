@@ -1,9 +1,9 @@
 #pragma once
 
-#include "MemoryBlock.h"
-#include "GameState.h"
-#include "OamRepository.h"
-#include "SpriteRepository.h"
+#include "Core/MemoryBlock.h"
+#include "Game/GameState.h"
+#include "Graphics/OamRepository.h"
+#include "Graphics/SpriteRepository.h"
 
 class GameRenderer {
     private:

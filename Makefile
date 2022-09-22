@@ -3,7 +3,7 @@ PATH := $(DEVKITARM)/bin:$(DEVKITPRO)/tools/bin:$(PATH)
 ROM := md
 
 # Collect all source/data files to be built
-SRC = $(wildcard src/*.cpp)
+SRC = $(wildcard src/*.cpp) $(wildcard src/**/*.cpp)
 GFX = $(wildcard gfx/*.png)
 
 # C files will depend on headers generated for our image data
@@ -32,10 +32,11 @@ build/$(ROM).elf: $(OFILES)
 
 # Compiles any cpp file into a .o file to be linked. the generation of gfx headers must happen first.
 build/%.o: src/%.cpp $(GFXH) | build/
+	mkdir -p $(@D)
 	arm-none-eabi-g++ -g -Wall -O2 \
 		-march=armv5te -mtune=arm946e-s -mthumb -mthumb-interwork \
 		-fomit-frame-pointer -ffast-math -fno-rtti -fno-exceptions \
-		-I/opt/devkitpro/libnds/include -Ibuild -DARM9 \
+		-I/opt/devkitpro/libnds/include -Ibuild -Isrc -DARM9 \
 		-c $< -o $@
 
 # PNG files must be converted into both .h and .s files for both the definitions and data to be referenced elsewhere

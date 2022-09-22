@@ -1,7 +1,7 @@
 #pragma once
 
 #include <nds.h>
-#include "MemoryBlock.h"
+#include "Core/MemoryBlock.h"
 
 class Map {
     private:
