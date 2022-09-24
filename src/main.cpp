@@ -1,13 +1,11 @@
 // System
 #include <nds.h>
 #include <stdio.h>
-#include <vector>
-#include <queue>
-#include <map>
 // Internal
 #include "Core/InputState.h"
 #include "Core/MemoryBlock.h"
 #include "Game/GameState.h"
+#include "Game/PlayerController.h"
 #include "Graphics/GameRenderer.h"
 // GFX
 #include "map.h"
@@ -21,10 +19,12 @@ int main() {
     MemoryBlock tiles(mapTiles, mapTilesLen);
     MemoryBlock mapData(mapMap, mapMapLen);
     MemoryBlock character(characterTiles, characterTilesLen);
+
+    PlayerController playerController;
     
     GameState gameState;
     gameState.getMap().load(mapData);
-    gameState.spawnAt(0, 4, 4);
+    gameState.spawnAt(0, 4, 4, playerController);
 
     GameRenderer renderer(&oamMain);
     renderer.init(bgPalette, spritePalette, tiles);

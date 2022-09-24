@@ -51,3 +51,5 @@ run: build/$(ROM).nds
 
 clean:
 	rm -rf build
+
+# TODO: Need to support file dependency lists now that everything is split up...

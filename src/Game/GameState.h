@@ -9,11 +9,12 @@ class GameState {
     private:
         Map map;
         std::vector<Character> characters;
-        int turnIndex = 0;
+        unsigned int turnIndex = 0;
         int idCounter = 0;
+        int getNextTurnIndex();
     public:
         Map& getMap();
         std::vector<Character>& getCharacters();
-        void spawnAt(int type, int x, int y);
+        void spawnAt(int type, int x, int y, Controller& controller);
         void update(InputState& inputState);
 };
