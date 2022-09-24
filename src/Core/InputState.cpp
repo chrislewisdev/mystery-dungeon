@@ -4,7 +4,7 @@
 
 InputState InputState::getInputState() {
     scanKeys();
-    uint32 input = keysCurrent();
+    uint32 input = keysDownRepeat();
     return InputState{
         .a              = (input & KEY_A) != 0,
         .b              = (input & KEY_B) != 0,
