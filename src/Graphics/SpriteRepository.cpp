@@ -10,6 +10,6 @@ void SpriteRepository::loadSprite(int typeId, MemoryBlock gfx) {
 }
 
 u16* SpriteRepository::getSprite(int typeId) {
-    // TODO: Would we ever request a sprite that isn't currently loaded?
+    // TODO: What if we request a sprite that isn't currently loaded?
     return sprites.at(typeId);
 }

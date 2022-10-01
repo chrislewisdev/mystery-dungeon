@@ -9,16 +9,19 @@
 #include "Graphics/GameRenderer.h"
 // GFX
 #include "map.h"
-#include "palette.h"
-#include "character.h"
+#include "palette-endesga.h"
+#include "palette-sweetie.h"
+#include "princess.h"
 
 int main() {
     // Placeholder map data
-    MemoryBlock spritePalette(palettePal, palettePalLen);
+    // MemoryBlock spritePalette(palette_endesgaPal, palette_endesgaPalLen);
+    MemoryBlock spritePalette(palette_sweetiePal, palette_sweetiePalLen);
+    // MemoryBlock spritePalette(princessPal, princessPalLen);
     MemoryBlock bgPalette(mapPal, mapPalLen);
     MemoryBlock tiles(mapTiles, mapTilesLen);
     MemoryBlock mapData(mapMap, mapMapLen);
-    MemoryBlock character(characterTiles, characterTilesLen);
+    MemoryBlock character(princessTiles, princessTilesLen);
 
     PlayerController playerController;
     

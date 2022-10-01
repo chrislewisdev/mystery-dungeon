@@ -44,7 +44,7 @@ build/%.o: src/%.cpp $(GFXH) | build/
 		-c $< -o $@
 
 # PNG files must be converted into both .h and .s files for both the definitions and data to be referenced elsewhere
-build/%.s build/%.h: gfx/%.png | build/
+build/%.s build/%.h: gfx/%.png gfx/%.png.grit | build/
 	grit $< -ff $<.grit -o $(basename $@)
 
 build/:

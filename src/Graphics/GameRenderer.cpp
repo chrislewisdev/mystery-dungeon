@@ -9,6 +9,8 @@ GameRenderer::GameRenderer(OamState* oamMain) : spriteRepository(oamMain) {}
 SpriteRepository& GameRenderer::getSpriteRepository() { return spriteRepository; }
 
 void GameRenderer::init(const MemoryBlock& bgPalette, const MemoryBlock& spritePalette, const MemoryBlock& tiles){
+    lcdMainOnBottom();
+    
     videoSetMode(MODE_0_2D);
     videoSetModeSub(MODE_0_2D);
 
