@@ -34,7 +34,7 @@ build/$(ROM).elf: $(OFILES)
 	arm-none-eabi-g++ -x assembler-with-cpp -g -marm -mthumb-interwork -march=armv5te -mtune=arm946e-s -c $< -o $@
 
 # Compiles any cpp file into a .o file to be linked. the generation of gfx headers must happen first.
-build/%.o: src/%.cpp $(GFXH) | build/
+build/%.o: src/%.cpp | build/ $(GFXH)
 	@mkdir -p $(@D)
 	arm-none-eabi-g++ -g -Wall -O2 \
 		-MMD -MP \
