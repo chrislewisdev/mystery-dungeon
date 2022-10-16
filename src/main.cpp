@@ -32,8 +32,8 @@ int main() {
     GameState gameState;
     gameState.getMap().load(mapData);
     gameState.spawnAt(0, 4, 4, playerController);
-    gameState.spawnAt(1, 8, 8, playerController);
-    gameState.spawnAt(2, 8, 4, playerController);
+    // gameState.spawnAt(1, 8, 8, playerController);
+    // gameState.spawnAt(2, 8, 4, playerController);
 
     GameRenderer renderer(&oamMain);
     renderer.init(bgPalette, spritePalette, tiles);

@@ -12,3 +12,7 @@ void Map::flushMap(u16* destination) {
 u16 Map::getMapVersion() {
     return mapVersion;
 }
+
+u16 Map::getTile(int x, int y) {
+    return 0;
+}

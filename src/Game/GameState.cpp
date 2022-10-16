@@ -29,7 +29,7 @@ void GameState::update(InputState& inputState) {
 
     Character& currentTurnCharacter = characters.at(turnIndex);
     Controller& controller = currentTurnCharacter.getController();
-    unique_ptr<Command> command = controller.getCommand(inputState, currentTurnCharacter);
+    unique_ptr<Command> command = controller.getCommand(inputState, *this, currentTurnCharacter);
     if (command) {
         command.get()->apply();
         turnIndex = getNextTurnIndex();
