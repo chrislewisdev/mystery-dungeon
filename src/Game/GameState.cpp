@@ -25,8 +25,6 @@ void GameState::spawnAt(int type, int x, int y, Controller& controller) {
 }
 
 void GameState::update(InputState& inputState) {
-    iprintf("%d\n", turnIndex);
-
     Character& currentTurnCharacter = characters.at(turnIndex);
     Controller& controller = currentTurnCharacter.getController();
     unique_ptr<Command> command = controller.getCommand(inputState, *this, currentTurnCharacter);

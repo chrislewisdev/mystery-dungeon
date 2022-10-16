@@ -37,7 +37,6 @@ void GameRenderer::render(GameState& gameState) {
     for (Character& character : gameState.getCharacters()) {
         // TODO: camera culling
         int oamId = oamRepository.getOrAllocateOamId(character.getId());
-        iprintf("%d\n", oamId);
         u16* sprite = spriteRepository.getSprite(character.getType());
         Vec2 location = character.getLocation();
         oamSet(&oamMain, oamId,
