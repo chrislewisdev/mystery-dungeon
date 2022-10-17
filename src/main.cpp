@@ -6,6 +6,7 @@
 #include "Core/MemoryBlock.h"
 #include "Game/GameState.h"
 #include "Game/PlayerController.h"
+#include "Game/RoomMapGenerator.h"
 #include "Graphics/GameRenderer.h"
 // GFX
 #include "map.h"
@@ -29,8 +30,9 @@ int main() {
 
     PlayerController playerController;
     
-    GameState gameState;
-    gameState.getMap().load(mapData);
+    RoomMapGenerator mapGenerator;
+    GameState gameState(mapGenerator);
+    // gameState.getMap().load(mapData);
     gameState.spawnAt(0, 4, 4, playerController);
     // gameState.spawnAt(1, 8, 8, playerController);
     // gameState.spawnAt(2, 8, 4, playerController);

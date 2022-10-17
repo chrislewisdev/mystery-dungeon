@@ -6,6 +6,8 @@
 
 using namespace std;
 
+GameState::GameState(MapGenerator& mapGenerator): map(mapGenerator.generateMap()) {}
+
 int GameState::getNextTurnIndex() {
     return turnIndex + 1 >= characters.size() ? 0 : turnIndex + 1;
 }

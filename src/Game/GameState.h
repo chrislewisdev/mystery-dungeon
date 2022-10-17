@@ -4,6 +4,7 @@
 #include "Core/InputState.h"
 #include "Game/Character.h"
 #include "Game/Map.h"
+#include "Game/MapGenerator.h"
 
 class GameState {
     private:
@@ -13,6 +14,7 @@ class GameState {
         int idCounter = 0;
         int getNextTurnIndex();
     public:
+        GameState(MapGenerator& mapGenerator);
         Map& getMap();
         std::vector<Character>& getCharacters();
         void spawnAt(int type, int x, int y, Controller& controller);

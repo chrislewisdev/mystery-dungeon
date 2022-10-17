@@ -1,16 +1,17 @@
 #include "Map.h"
 
-Map::Map() {
-    virtualMap = new u16[MAP_MEMORY_SIZE];
+Map::Map(unique_ptr<u16[]>& contents) : virtualMap(move(contents)) {
+    // virtualMap = make_unique<u16[]>(MAP_MEMORY_SIZE);
+    mapVersion = 1;
 }
 
 void Map::load(const MemoryBlock& memory) {
-    dmaCopy(memory.source, virtualMap, memory.size);
+    dmaCopy(memory.source, virtualMap.get(), memory.size);
     mapVersion++;
 }
 
 void Map::flushMap(u16* destination) {
-    dmaCopy(virtualMap, destination, sizeof(u16) * MAP_MEMORY_SIZE);
+    dmaCopy(virtualMap.get(), destination, sizeof(u16) * MAP_MEMORY_SIZE);
 }
 
 u16 Map::getMapVersion() {
