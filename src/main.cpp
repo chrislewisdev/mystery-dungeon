@@ -9,7 +9,7 @@
 #include "Game/RoomMapGenerator.h"
 #include "Graphics/GameRenderer.h"
 // GFX
-#include "map.h"
+#include "tiles.h"
 #include "palette-endesga.h"
 #include "palette-sweetie.h"
 #include "princess.h"
@@ -17,19 +17,16 @@
 #include "slime.h"
 
 void setupMetaTiles(MetaTileRepository& metaTileRepository) {
-    metaTileRepository.store(MetaTile(0, 0, 0, 0, 0));
-    metaTileRepository.store(MetaTile(1, 1, 2, 3, 4));
-    metaTileRepository.store(MetaTile(2, 5, 6, 7, 8));
+    metaTileRepository.store(MetaTile(0, 0, 1, 2, 3));
+    metaTileRepository.store(MetaTile(1, 4, 5, 6, 7));
+    metaTileRepository.store(MetaTile(2, 8, 9, 10, 11));
 }
 
 int main() {
-    // Placeholder map data
     // MemoryBlock spritePalette(palette_endesgaPal, palette_endesgaPalLen);
     MemoryBlock spritePalette(palette_sweetiePal, palette_sweetiePalLen);
-    // MemoryBlock spritePalette(princessPal, princessPalLen);
-    MemoryBlock bgPalette(mapPal, mapPalLen);
-    MemoryBlock tiles(mapTiles, mapTilesLen);
-    MemoryBlock mapData(mapMap, mapMapLen);
+    MemoryBlock bgPalette(tilesPal, tilesPalLen);
+    MemoryBlock tiles(tilesTiles, tilesTilesLen);
     MemoryBlock character(princessTiles, princessTilesLen);
     MemoryBlock goblin(goblinTiles, goblinTilesLen);
     MemoryBlock slime(slimeTiles, slimeTilesLen);
