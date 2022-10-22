@@ -9,9 +9,9 @@ unique_ptr<MoveCommand> move(GameState& gameState, Character& character, int x, 
     Vec2 delta(x, y);
 
     // Check that terrain at destination is walkable
-    if (gameState.getMap().getTile(character.getLocation() + delta) != 5) {
-        return nullptr;
-    }
+    // if (gameState.getMap().getTile(character.getLocation() + delta) != 5) {
+    //     return nullptr;
+    // }
 
     return make_unique<MoveCommand>(character, Vec2(x, y));
 }

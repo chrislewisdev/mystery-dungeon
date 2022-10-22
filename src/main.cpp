@@ -16,6 +16,12 @@
 #include "goblin.h"
 #include "slime.h"
 
+void setupMetaTiles(MetaTileRepository& metaTileRepository) {
+    metaTileRepository.store(MetaTile(0, 0, 0, 0, 0));
+    metaTileRepository.store(MetaTile(1, 1, 2, 3, 4));
+    metaTileRepository.store(MetaTile(2, 5, 6, 7, 8));
+}
+
 int main() {
     // Placeholder map data
     // MemoryBlock spritePalette(palette_endesgaPal, palette_endesgaPalLen);
@@ -30,9 +36,11 @@ int main() {
 
     PlayerController playerController;
     
-    RoomMapGenerator mapGenerator;
+    MetaTileRepository metaTileRepository;
+    setupMetaTiles(metaTileRepository);
+
+    RoomMapGenerator mapGenerator(metaTileRepository);
     GameState gameState(mapGenerator);
-    // gameState.getMap().load(mapData);
     gameState.spawnAt(0, 4, 4, playerController);
     // gameState.spawnAt(1, 8, 8, playerController);
     // gameState.spawnAt(2, 8, 4, playerController);
