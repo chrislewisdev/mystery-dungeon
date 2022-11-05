@@ -9,16 +9,16 @@ unique_ptr<MoveCommand> move(GameState& gameState, Character& character, int x, 
     Vec2 delta(x, y);
 
     // Check that terrain at destination is walkable
-    // if (gameState.getMap().getTile(character.getLocation() + delta) != 5) {
-    //     return nullptr;
-    // }
+    if (gameState.getMap().getTile(character.getLocation() + delta).getAttributes().isSolid) {
+        return nullptr;
+    }
 
     return make_unique<MoveCommand>(character, Vec2(x, y));
 }
 
 unique_ptr<Command> PlayerController::getCommand(InputState& inputState, GameState& gameState, Character& character) {
     Vec2 location = character.getLocation();
-    iprintf("Tile at %d,%d: %u\n", location.x, location.y, gameState.getMap().getTile(location));
+    iprintf("Tile at %d,%d: %u\n", location.x, location.y, gameState.getMap().getTile(location).getId());
 
     if (inputState.left) {
         return move(gameState, character, -1, 0);

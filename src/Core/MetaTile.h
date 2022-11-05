@@ -15,8 +15,10 @@ class MetaTile {
         u16 topLeft, topRight, bottomLeft, bottomRight;
     public:
         MetaTile() {}
-        MetaTile(MetaTileId id, u16 topLeft, u16 topRight, u16 bottomLeft, u16 bottomRight) 
-            : id(id), topLeft(topLeft), topRight(topRight), bottomLeft(bottomLeft), bottomRight(bottomRight) {}
+        MetaTile(MetaTileId id, bool isSolid) 
+            : id(id), topLeft(id * 4), topRight(id * 4 + 1), bottomLeft(id * 4 + 2), bottomRight(id * 4 + 3) {
+                attributes.isSolid = isSolid;
+            }
         MetaTileId getId() { return id; }
         u16 getTopLeftTile() { return topLeft; }
         u16 getTopRightTile() { return topRight; }

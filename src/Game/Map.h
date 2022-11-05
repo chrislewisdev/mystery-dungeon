@@ -21,7 +21,7 @@ class Map {
         Map(MetaTileRepository& metaTileRepository, unique_ptr<u16[]>& contents);
         void flushMap(u16* destination);
         u16 getMapVersion();
-        // Gets the value of the tile at x/y USING GAME CO-ORDINATES. 
-        u16 getTile(Vec2 location);
+        // Gets the tile at x/y USING GAME CO-ORDINATES. 
+        MetaTile getTile(Vec2 location);
         void renderMetamap(int width, int height);
 };

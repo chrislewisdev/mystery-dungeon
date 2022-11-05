@@ -14,10 +14,11 @@ u16 Map::getMapVersion() {
     return mapVersion;
 }
 
-u16 Map::getTile(Vec2 location) {
+MetaTile Map::getTile(Vec2 location) {
     // TODO: This wil need to come from the map generator
     const int mapWidth = 16;
-    return metamap[location.y * mapWidth + location.x];
+    u16 metaTileId = metamap[location.y * mapWidth + location.x];
+    return metaTileRepository.get(metaTileId);
 }
 
 void renderTile(u16* virtualMap, Vec2 location, u16 tile) {
