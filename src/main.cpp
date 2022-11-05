@@ -32,7 +32,6 @@ void setupMetaTiles(MetaTileRepository& metaTileRepository) {
 }
 
 int main() {
-    // MemoryBlock spritePalette(palette_endesgaPal, palette_endesgaPalLen);
     MemoryBlock spritePalette(palette_sweetiePal, palette_sweetiePalLen);
     MemoryBlock bgPalette(tilesPal, tilesPalLen);
     MemoryBlock tiles(tilesTiles, tilesTilesLen);

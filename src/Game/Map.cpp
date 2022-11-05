@@ -1,9 +1,9 @@
 #include "Map.h"
 
-Map::Map(MetaTileRepository& metaTileRepository, unique_ptr<u16[]>& contents)
-: metaTileRepository(metaTileRepository), metamap(move(contents)) {
+Map::Map(MetaTileRepository& metaTileRepository, u16 width, u16 height, unique_ptr<u16[]>& contents)
+: metaTileRepository(metaTileRepository), metamapWidth(width), metamapHeight(height), metamap(move(contents)) {
     virtualMap = make_unique<u16[]>(VIRTUAL_MAP_WIDTH * VIRTUAL_MAP_HEIGHT);
-    renderMetamap(16, 12);
+    renderMetamap();
 }
 
 void Map::flushMap(u16* destination) {
@@ -15,9 +15,7 @@ u16 Map::getMapVersion() {
 }
 
 MetaTile Map::getTile(Vec2 location) {
-    // TODO: This wil need to come from the map generator
-    const int mapWidth = 16;
-    u16 metaTileId = metamap[location.y * mapWidth + location.x];
+    u16 metaTileId = metamap[location.y * metamapWidth + location.x];
     return metaTileRepository.get(metaTileId);
 }
 
@@ -25,10 +23,10 @@ void renderTile(u16* virtualMap, Vec2 location, u16 tile) {
     virtualMap[location.y * VIRTUAL_MAP_WIDTH + location.x] = tile;
 }
 
-void Map::renderMetamap(int width, int height) {
-    for (int x = 0; x < width; x++) {
-        for (int y = 0; y < height; y++) {
-            u16 metaTileId = metamap[y * width + x];
+void Map::renderMetamap() {
+    for (int x = 0; x < SCREEN_TILE_WIDTH; x++) {
+        for (int y = 0; y < SCREEN_TILE_HEIGHT; y++) {
+            u16 metaTileId = metamap[y * metamapWidth + x];
             MetaTile metaTile = metaTileRepository.get(metaTileId);
             Vec2 virtualMapAddress(x * 2, y * 2);
             Vec2 right(1, 0);
@@ -39,4 +37,5 @@ void Map::renderMetamap(int width, int height) {
             renderTile(virtualMap.get(), virtualMapAddress + right + down, metaTile.getBottomRightTile());
         }
     }
+    mapVersion++;
 }
