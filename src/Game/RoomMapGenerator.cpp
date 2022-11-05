@@ -6,7 +6,7 @@ using namespace std;
 RoomMapGenerator::RoomMapGenerator(MetaTileRepository& metaTileRepository) : metaTileRepository(metaTileRepository) {}
 
 Map RoomMapGenerator::generateMap() {
-    const u16 width = 16, height = 12;
+    const u16 width = 32, height = 24;
     unique_ptr<u16[]> contents = make_unique<u16[]>(width * height);
 
     const u16 ceilingTileId = metaTileRepository.getCeilingTileId();
@@ -27,6 +27,10 @@ Map RoomMapGenerator::generateMap() {
     for (u16 y = 0; y < height; y++) {
         rawMap[y * width] = ceilingTileId;
         rawMap[y * width + (width - 1)] = ceilingTileId;
+    }
+    //Insert some features to break up the floor
+    for (u16 x = 8; x < width; x += 8) {
+        rawMap[width*2 + x] = ceilingTileId;
     }
 
     return Map(metaTileRepository, width, height, contents);

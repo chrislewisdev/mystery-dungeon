@@ -3,7 +3,7 @@
 Map::Map(MetaTileRepository& metaTileRepository, u16 width, u16 height, unique_ptr<u16[]>& contents)
 : metaTileRepository(metaTileRepository), metamapWidth(width), metamapHeight(height), metamap(move(contents)) {
     virtualMap = make_unique<u16[]>(VIRTUAL_MAP_WIDTH * VIRTUAL_MAP_HEIGHT);
-    renderMetamap();
+    renderMetamap(Vec2());
 }
 
 void Map::flushMap(u16* destination) {
@@ -23,10 +23,13 @@ void renderTile(u16* virtualMap, Vec2 location, u16 tile) {
     virtualMap[location.y * VIRTUAL_MAP_WIDTH + location.x] = tile;
 }
 
-void Map::renderMetamap() {
+void Map::renderMetamap(Vec2 cameraLocation) {
     for (int x = 0; x < SCREEN_TILE_WIDTH; x++) {
         for (int y = 0; y < SCREEN_TILE_HEIGHT; y++) {
-            u16 metaTileId = metamap[y * metamapWidth + x];
+            Vec2 metamapAddress = cameraLocation + Vec2(x, y);
+            u16 metaTileId = isInBounds(metamapAddress)
+                ? metamap[metamapAddress.y * metamapWidth + metamapAddress.x]
+                : metaTileRepository.getCeilingTileId();
             MetaTile metaTile = metaTileRepository.get(metaTileId);
             Vec2 virtualMapAddress(x * 2, y * 2);
             Vec2 right(1, 0);
@@ -38,4 +41,13 @@ void Map::renderMetamap() {
         }
     }
     mapVersion++;
+}
+
+bool Map::isInBounds(Vec2 metamapAddress) {
+    if (metamapAddress.x < 0) return false;
+    if (metamapAddress.y < 0) return false;
+    if (metamapAddress.x >= metamapWidth) return false;
+    if (metamapAddress.y >= metamapHeight) return false;
+
+    return true;
 }

@@ -20,11 +20,13 @@ class Map {
         u16 metamapWidth, metamapHeight;
         unique_ptr<u16[]> metamap;
         unique_ptr<u16[]> virtualMap;
+        
+        bool isInBounds(Vec2 metamapAddress);
     public:
         Map(MetaTileRepository& metaTileRepository, u16 width, u16 height, unique_ptr<u16[]>& contents);
         void flushMap(u16* destination);
         u16 getMapVersion();
         // Gets the tile at x/y USING GAME CO-ORDINATES. 
         MetaTile getTile(Vec2 location);
-        void renderMetamap();
+        void renderMetamap(Vec2 cameraLocation);
 };

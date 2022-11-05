@@ -38,7 +38,7 @@ void GameRenderer::render(GameState& gameState) {
         // TODO: camera culling
         int oamId = oamRepository.getOrAllocateOamId(character.getId());
         u16* sprite = spriteRepository.getSprite(character.getType());
-        Vec2 location = character.getLocation();
+        Vec2 location = character.getLocation() - gameState.getCameraLocation();
         oamSet(&oamMain, oamId,
             location.x * TILE_SIZE, location.y * TILE_SIZE,
             0, 0, SpriteSize_16x16, SpriteColorFormat_16Color, sprite, 0, false, false, false, false, false);

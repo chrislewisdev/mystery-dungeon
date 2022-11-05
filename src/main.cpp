@@ -46,9 +46,10 @@ int main() {
 
     RoomMapGenerator mapGenerator(metaTileRepository);
     GameState gameState(mapGenerator);
-    gameState.spawnAt(0, 4, 4, playerController);
+    Character& player = gameState.spawnAt(0, 4, 4, playerController);
     // gameState.spawnAt(1, 8, 8, playerController);
     // gameState.spawnAt(2, 8, 4, playerController);
+    gameState.setCameraTarget(&player);
 
     GameRenderer renderer(&oamMain);
     renderer.init(bgPalette, spritePalette, tiles);
