@@ -6,7 +6,7 @@
 #include "Core/MemoryBlock.h"
 #include "Game/GameState.h"
 #include "Game/PlayerController.h"
-#include "Game/RoomMapGenerator.h"
+#include "Game/ConnectedRoomsMapGenerator.h"
 #include "Graphics/GameRenderer.h"
 // GFX
 #include "tiles.h"
@@ -44,8 +44,9 @@ int main() {
     MetaTileRepository metaTileRepository;
     setupMetaTiles(metaTileRepository);
 
-    RoomMapGenerator mapGenerator(metaTileRepository);
+    ConnectedRoomsMapGenerator mapGenerator(metaTileRepository);
     GameState gameState(mapGenerator);
+    // TODO: Spawn the character based on map info. This should probably be moved into some kind of GameState method to initialise a floor!!!
     Character& player = gameState.spawnAt(0, 4, 4, playerController);
     // gameState.spawnAt(1, 8, 8, playerController);
     // gameState.spawnAt(2, 8, 4, playerController);
