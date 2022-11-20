@@ -49,6 +49,9 @@ int main() {
     Character& player = gameState.spawnAt(0, 4, 4, playerController);
     // gameState.spawnAt(1, 8, 8, playerController);
     // gameState.spawnAt(2, 8, 4, playerController);
+
+    // THIS BREAKS IF THE CHARACTERS VECTOR REALLOCATES AND THE PLAYER MOVES IN MEMORY
+    // Consider: setting an id of the character to track instead of a raw pointer
     gameState.setCameraTarget(&player);
 
     GameRenderer renderer(&oamMain);

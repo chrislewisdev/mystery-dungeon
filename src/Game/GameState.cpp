@@ -6,7 +6,9 @@
 
 using namespace std;
 
-GameState::GameState(MapGenerator& mapGenerator): map(mapGenerator.generateMap()) {}
+GameState::GameState(MapGenerator& mapGenerator): map(mapGenerator.generateMap()) {
+    characters.reserve(20);
+}
 
 int GameState::getNextTurnIndex() {
     return turnIndex + 1 >= characters.size() ? 0 : turnIndex + 1;
@@ -31,9 +33,10 @@ Vec2 trackTarget(Vec2 currentLocation, Character* targetCharacter) {
     int x = currentLocation.x, y = currentLocation.y;
     Vec2 target = targetCharacter->getLocation() - Vec2(8, 6);
 
-    if (x < target.x - 3) x = target.x - 3;
+    // Might want to tweak this bounding box at some point
+    if (x < target.x - 2) x = target.x - 2;
     if (x > target.x + 3) x = target.x + 3;
-    if (y < target.y - 3) y = target.y - 3;
+    if (y < target.y - 2) y = target.y - 2;
     if (y > target.y + 3) y = target.y + 3;
 
     return Vec2(x, y);
