@@ -1,6 +1,7 @@
 // System
 #include <nds.h>
 #include <stdio.h>
+#include <ctime>
 // Internal
 #include "Core/InputState.h"
 #include "Core/MemoryBlock.h"
@@ -17,7 +18,6 @@
 #include "slime.h"
 
 void setupMetaTiles(MetaTileRepository& metaTileRepository) {
-    // TODO: Set attributes for all these!
     MetaTile ceiling(0, true);
     MetaTile floor(1, false);
     MetaTile wall(2, true);
@@ -32,6 +32,8 @@ void setupMetaTiles(MetaTileRepository& metaTileRepository) {
 }
 
 int main() {
+    srand(time(0));
+
     MemoryBlock spritePalette(palette_sweetiePal, palette_sweetiePalLen);
     MemoryBlock bgPalette(tilesPal, tilesPalLen);
     MemoryBlock tiles(tilesTiles, tilesTilesLen);

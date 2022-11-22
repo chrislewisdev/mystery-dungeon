@@ -11,6 +11,7 @@ class Rect2 {
         int right() { return location.x + size.x; }
         int top() { return location.y; }
         int bottom() { return location.y + size.y; }
+        Vec2 midpoint() { return location + (size/2); } // Will always round down due to integer division
         bool intersects(Rect2& other) {
             return (this->left() < other.right() && this->right() > other.left()
                 && this->top() > other.bottom() && this->bottom() < other.top());

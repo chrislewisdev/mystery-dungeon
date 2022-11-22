@@ -14,21 +14,46 @@ void renderRoom(Rect2& room, u16* mapMemory, u16 mapWidth, MetaTileRepository& m
     }
 }
 
-// TODO: Make this actually work properly...
+int sign(int x) {
+    if (x == 0) return 0;
+    return x > 0 ? 1 : -1;
+}
+
 void connectRooms(Rect2& source, Rect2& destination, u16* mapMemory, u16 mapWidth, MetaTileRepository& metaTileRepository) {
-    int direction = source.left() > destination.left() ? -1 : 1;
+    Vec2 sourceMidpoint = source.midpoint();
+    Vec2 destinationMidpoint = destination.midpoint();
 
-    Vec2 pathPoint = source.location + Vec2(-1, 1);
-
-    while (pathPoint.x <= destination.left() || pathPoint.x >= destination.right()) {
-        pathPoint.x += direction;
+    // Randomise whether moving across-then-down vs down-then-across.
+    Vec2 anchor;
+    if (rand() % 2 == 0) {
+        anchor.x = sourceMidpoint.x;
+        anchor.y = destinationMidpoint.y;
+    } else {
+        anchor.x = destinationMidpoint.x;
+        anchor.y = sourceMidpoint.y;
     }
 
-    int yDirection = pathPoint.y < destination.top() ? 1 : -1;
-    while (pathPoint.y <= destination.top() || pathPoint.y >= destination.bottom()) {
-        mapMemory[pathPoint.y * mapWidth + pathPoint.x] = metaTileRepository.getFloorTileId();
-        pathPoint.y += yDirection;
+    for (int x = sourceMidpoint.x; x != destinationMidpoint.x; x += sign(destinationMidpoint.x - sourceMidpoint.x)) {
+        mapMemory[anchor.y * mapWidth + x] = metaTileRepository.getFloorTileId();
     }
+    for (int y = sourceMidpoint.y; y != destinationMidpoint.y; y += sign(destinationMidpoint.y - sourceMidpoint.y)) {
+        mapMemory[y * mapWidth + anchor.x] = metaTileRepository.getFloorTileId();
+    }
+}
+
+Rect2 generateRoom(int mapWidth, int mapHeight) {
+    const int minimumRoomWidth = 5;
+    const int minimumRoomHeight = 4;
+    const int maximumRoomWidth = 10;
+    const int maximumRoomHeight = 9;
+
+    Vec2 location(rand() % (mapWidth - minimumRoomWidth), rand() % (mapHeight - minimumRoomHeight));
+    Vec2 size(rand() % (maximumRoomWidth - minimumRoomWidth) + minimumRoomWidth, rand() % (maximumRoomHeight - minimumRoomHeight) + minimumRoomHeight);
+
+    if (location.x + size.x > mapWidth) size.x = mapWidth - location.x;
+    if (location.y + size.y > mapHeight) size.y = mapHeight - location.y;
+
+    return Rect2(location, size);
 }
 
 Map ConnectedRoomsMapGenerator::generateMap() {
@@ -42,10 +67,10 @@ Map ConnectedRoomsMapGenerator::generateMap() {
     // Fill memory with void tile
     dmaFillHalfWords(ceilingTileId, contents.get(), sizeof(u16) * width * height);
 
-    Rect2 room(Vec2(3, 2), Vec2(8, 5));
+    Rect2 room = generateRoom(width, height);
     renderRoom(room, contents.get(), width, metaTileRepository);
 
-    Rect2 room2(Vec2(10, 9), Vec2(3, 3));
+    Rect2 room2 = generateRoom(width, height);
     renderRoom(room2, contents.get(), width, metaTileRepository);
 
     connectRooms(room2, room, contents.get(), width, metaTileRepository);
