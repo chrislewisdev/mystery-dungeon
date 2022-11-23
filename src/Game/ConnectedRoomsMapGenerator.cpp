@@ -1,5 +1,6 @@
 #include "Game/ConnectedRoomsMapGenerator.h"
 #include <memory>
+#include <vector>
 #include "Core/Rect2.h"
 
 using namespace std;
@@ -46,10 +47,10 @@ void connectRooms(Rect2& source, Rect2& destination, u16* mapMemory, u16 mapWidt
 }
 
 Rect2 generateRoom(int mapWidth, int mapHeight) {
-    const int minimumRoomWidth = 8;
-    const int minimumRoomHeight = 7;
-    const int maximumRoomWidth = 14;
-    const int maximumRoomHeight = 12;
+    const int minimumRoomWidth = 6;
+    const int minimumRoomHeight = 4;
+    const int maximumRoomWidth = 10;
+    const int maximumRoomHeight = 9;
 
     Vec2 location(rand() % (mapWidth - minimumRoomWidth), rand() % (mapHeight - minimumRoomHeight));
     Vec2 size(rand() % (maximumRoomWidth - minimumRoomWidth) + minimumRoomWidth, rand() % (maximumRoomHeight - minimumRoomHeight) + minimumRoomHeight);
@@ -69,19 +70,24 @@ Map ConnectedRoomsMapGenerator::generateMap() {
     unique_ptr<u16[]> contents = make_unique<u16[]>(width * height);
 
     const u16 ceilingTileId = metaTileRepository.getCeilingTileId();
-    // const u16 floorTileId = metaTileRepository.getFloorTileId();
-    // const u16 wallTileId = metaTileRepository.getWallTileId();
 
     // Fill memory with void tile
     dmaFillHalfWords(ceilingTileId, contents.get(), sizeof(u16) * width * height);
 
-    Rect2 room = generateRoom(width, height);
-    Rect2 room2 = generateRoom(width, height);
+    int roomCount = rand() % 3 + 4;
+    vector<Rect2> rooms;
+    for (int i = 0; i < roomCount; i++) {
+        Rect2 room = generateRoom(width, height);
+        renderRoom(room, contents.get(), width, metaTileRepository);
+        rooms.push_back(room);
+    }
 
-    renderRoom(room, contents.get(), width, metaTileRepository);
-    renderRoom(room2, contents.get(), width, metaTileRepository);
+    // Connect all rooms together - should probably be more selective
+    for (int i = 0; i < rooms.size() - 1; i++) {
+        for (int j = i + 1; j < rooms.size(); j++) {
+            connectRooms(rooms[i], rooms[j], contents.get(), width, metaTileRepository);
+        }
+    }
 
-    connectRooms(room2, room, contents.get(), width, metaTileRepository);
-
-    return Map(metaTileRepository, width, height, contents, generateStartingLocation(room));
+    return Map(metaTileRepository, width, height, contents, generateStartingLocation(rooms[0]));
 }
