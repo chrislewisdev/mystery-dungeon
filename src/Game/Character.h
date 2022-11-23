@@ -15,5 +15,6 @@ class Character {
         int getType() { return type; }
         Vec2 getLocation() { return location; }
         void setLocation(int x, int y) { location.x = x; location.y = y; }
+        void setLocation(Vec2 l) { location = l; }
         Controller& getController() { return controller; }
 };

@@ -35,6 +35,10 @@ void connectRooms(Rect2& source, Rect2& destination, u16* mapMemory, u16 mapWidt
 
     for (int x = sourceMidpoint.x; x != destinationMidpoint.x; x += sign(destinationMidpoint.x - sourceMidpoint.x)) {
         mapMemory[anchor.y * mapWidth + x] = metaTileRepository.getFloorTileId();
+
+        int a = (anchor.y - 1) * mapWidth + x;
+        if (mapMemory[a] == metaTileRepository.getCeilingTileId())
+            mapMemory[a] = metaTileRepository.getWallTileId();
     }
     for (int y = sourceMidpoint.y; y != destinationMidpoint.y; y += sign(destinationMidpoint.y - sourceMidpoint.y)) {
         mapMemory[y * mapWidth + anchor.x] = metaTileRepository.getFloorTileId();
@@ -42,10 +46,10 @@ void connectRooms(Rect2& source, Rect2& destination, u16* mapMemory, u16 mapWidt
 }
 
 Rect2 generateRoom(int mapWidth, int mapHeight) {
-    const int minimumRoomWidth = 5;
-    const int minimumRoomHeight = 4;
-    const int maximumRoomWidth = 10;
-    const int maximumRoomHeight = 9;
+    const int minimumRoomWidth = 8;
+    const int minimumRoomHeight = 7;
+    const int maximumRoomWidth = 14;
+    const int maximumRoomHeight = 12;
 
     Vec2 location(rand() % (mapWidth - minimumRoomWidth), rand() % (mapHeight - minimumRoomHeight));
     Vec2 size(rand() % (maximumRoomWidth - minimumRoomWidth) + minimumRoomWidth, rand() % (maximumRoomHeight - minimumRoomHeight) + minimumRoomHeight);
@@ -56,24 +60,28 @@ Rect2 generateRoom(int mapWidth, int mapHeight) {
     return Rect2(location, size);
 }
 
+Vec2 generateStartingLocation(Rect2 room) {
+    return room.location + Vec2(rand() % room.size.x, rand() % (room.size.y - 1) + 1);
+}
+
 Map ConnectedRoomsMapGenerator::generateMap() {
     const u16 width = 32, height = 24;
     unique_ptr<u16[]> contents = make_unique<u16[]>(width * height);
 
     const u16 ceilingTileId = metaTileRepository.getCeilingTileId();
-    const u16 floorTileId = metaTileRepository.getFloorTileId();
-    const u16 wallTileId = metaTileRepository.getWallTileId();
+    // const u16 floorTileId = metaTileRepository.getFloorTileId();
+    // const u16 wallTileId = metaTileRepository.getWallTileId();
 
     // Fill memory with void tile
     dmaFillHalfWords(ceilingTileId, contents.get(), sizeof(u16) * width * height);
 
     Rect2 room = generateRoom(width, height);
-    renderRoom(room, contents.get(), width, metaTileRepository);
-
     Rect2 room2 = generateRoom(width, height);
+
+    renderRoom(room, contents.get(), width, metaTileRepository);
     renderRoom(room2, contents.get(), width, metaTileRepository);
 
     connectRooms(room2, room, contents.get(), width, metaTileRepository);
 
-    return Map(metaTileRepository, width, height, contents);
+    return Map(metaTileRepository, width, height, contents, generateStartingLocation(room));
 }

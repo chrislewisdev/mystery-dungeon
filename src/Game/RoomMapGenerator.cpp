@@ -33,5 +33,5 @@ Map RoomMapGenerator::generateMap() {
         rawMap[width*2 + x] = ceilingTileId;
     }
 
-    return Map(metaTileRepository, width, height, contents);
+    return Map(metaTileRepository, width, height, contents, Vec2(5, 5));
 }

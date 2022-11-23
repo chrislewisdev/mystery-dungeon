@@ -1,17 +1,25 @@
 #include "Map.h"
 
-Map::Map(MetaTileRepository& metaTileRepository, u16 width, u16 height, unique_ptr<u16[]>& contents)
-: metaTileRepository(metaTileRepository), metamapWidth(width), metamapHeight(height), metamap(move(contents)) {
+Map::Map(
+    MetaTileRepository& metaTileRepository,
+    u16 width,
+    u16 height,
+    unique_ptr<u16[]>& contents,
+    Vec2 startingLocation
+) : metaTileRepository(metaTileRepository),
+    metamapWidth(width), metamapHeight(height), 
+    metamap(move(contents)), 
+    startingLocation(startingLocation)
+{
     virtualMap = make_unique<u16[]>(VIRTUAL_MAP_WIDTH * VIRTUAL_MAP_HEIGHT);
     renderMetamap(Vec2());
 }
 
+u16 Map::getMapVersion() { return mapVersion; }
+Vec2 Map::getStartingLocation() { return startingLocation; }
+
 void Map::flushMap(u16* destination) {
     dmaCopy(virtualMap.get(), destination, sizeof(u16) * VIRTUAL_MAP_WIDTH * VIRTUAL_MAP_HEIGHT);
-}
-
-u16 Map::getMapVersion() {
-    return mapVersion;
 }
 
 MetaTile Map::getTile(Vec2 location) {
