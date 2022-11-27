@@ -6,7 +6,7 @@
 
 using namespace std;
 
-GameState::GameState(MapGenerator& mapGenerator): map(mapGenerator.generateMap()) {
+GameState::GameState(MapGenerator& mapGenerator): map(mapGenerator.generateMap()), mapGenerator(mapGenerator) {
     characters.reserve(20);
 }
 
@@ -22,8 +22,8 @@ std::vector<Character>& GameState::getCharacters() {
     return characters;
 }
 
-Character& GameState::spawnAt(int type, int x, int y, Controller& controller) {
-    Character character(idCounter++, type, controller);
+Character& GameState::spawnAt(int type, int x, int y, Controller& controller, bool isPlayer) {
+    Character character(idCounter++, type, controller, isPlayer);
     character.setLocation(x, y);
     characters.push_back(character);
     return characters.back();
@@ -50,6 +50,16 @@ void GameState::update(InputState& inputState) {
     if (command) {
         command.get()->apply();
         turnIndex = getNextTurnIndex();
+    }
+
+    // Player-specific checks.
+    if (currentTurnCharacter.getIsPlayer()) {
+        MetaTile tile = map.getTile(currentTurnCharacter.getLocation());
+        if (tile.getAttributes().isStairs) {
+            iprintf("Look, stairs!\n");
+            // Need to work out how we will reset and re-generate the floor...
+            // map = mapGenerator.generateMap();
+        }
     }
 
     // Update camera

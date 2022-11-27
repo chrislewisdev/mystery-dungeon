@@ -15,11 +15,12 @@ class GameState {
         int getNextTurnIndex();
         Vec2 camera;
         Character* cameraTarget;
+        MapGenerator& mapGenerator;
     public:
         GameState(MapGenerator& mapGenerator);
         Map& getMap();
         std::vector<Character>& getCharacters();
-        Character& spawnAt(int type, int x, int y, Controller& controller);
+        Character& spawnAt(int type, int x, int y, Controller& controller, bool isPlayer);
         void update(InputState& inputState);
         void setCameraTarget(Character* target);
         Vec2 getCameraLocation();

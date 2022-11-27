@@ -52,7 +52,7 @@ int main() {
     ConnectedRoomsMapGenerator mapGenerator(metaTileRepository);
     GameState gameState(mapGenerator);
     // TODO: Spawn the character based on map info. This should probably be moved into some kind of GameState method to initialise a floor!!!
-    Character& player = gameState.spawnAt(0, 4, 4, playerController);
+    Character& player = gameState.spawnAt(0, 4, 4, playerController, true);
     player.setLocation(gameState.getMap().getStartingLocation());
     // gameState.spawnAt(1, 8, 8, playerController);
     // gameState.spawnAt(2, 8, 4, playerController);
