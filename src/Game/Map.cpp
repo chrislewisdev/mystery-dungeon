@@ -1,14 +1,13 @@
 #include "Map.h"
 
+using namespace std;
+
 Map::Map(
     MetaTileRepository& metaTileRepository,
-    u16 width,
-    u16 height,
-    unique_ptr<u16[]>& contents,
+    Metamap metamap,
     Vec2 startingLocation
 ) : metaTileRepository(metaTileRepository),
-    metamapWidth(width), metamapHeight(height), 
-    metamap(move(contents)), 
+    metamap(metamap),
     startingLocation(startingLocation)
 {
     virtualMap = make_unique<u16[]>(VIRTUAL_MAP_WIDTH * VIRTUAL_MAP_HEIGHT);
@@ -23,7 +22,7 @@ void Map::flushMap(u16* destination) {
 }
 
 MetaTile Map::getTile(Vec2 location) {
-    u16 metaTileId = metamap[location.y * metamapWidth + location.x];
+    u16 metaTileId = metamap.getTile(location.x, location.y);
     return metaTileRepository.get(metaTileId);
 }
 
@@ -36,7 +35,7 @@ void Map::renderMetamap(Vec2 cameraLocation) {
         for (int y = 0; y < SCREEN_TILE_HEIGHT; y++) {
             Vec2 metamapAddress = cameraLocation + Vec2(x, y);
             u16 metaTileId = isInBounds(metamapAddress)
-                ? metamap[metamapAddress.y * metamapWidth + metamapAddress.x]
+                ? metamap.getTile(metamapAddress.x, metamapAddress.y)
                 : metaTileRepository.getCeilingTileId();
             MetaTile metaTile = metaTileRepository.get(metaTileId);
             Vec2 virtualMapAddress(x * 2, y * 2);
@@ -51,11 +50,12 @@ void Map::renderMetamap(Vec2 cameraLocation) {
     mapVersion++;
 }
 
+// Might belong in Metamap more...
 bool Map::isInBounds(Vec2 metamapAddress) {
     if (metamapAddress.x < 0) return false;
     if (metamapAddress.y < 0) return false;
-    if (metamapAddress.x >= metamapWidth) return false;
-    if (metamapAddress.y >= metamapHeight) return false;
+    if (metamapAddress.x >= metamap.getWidth()) return false;
+    if (metamapAddress.y >= metamap.getHeight()) return false;
 
     return true;
 }

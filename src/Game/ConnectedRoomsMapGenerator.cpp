@@ -2,16 +2,16 @@
 #include <memory>
 #include <vector>
 #include "Core/Rect2.h"
+#include "Game/Metamap.h"
 
 using namespace std;
 
 ConnectedRoomsMapGenerator::ConnectedRoomsMapGenerator(MetaTileRepository& metaTileRepository) : metaTileRepository(metaTileRepository) {}
 
-void renderRoom(Rect2& room, u16* mapMemory, u16 mapWidth, MetaTileRepository& metaTileRepository) {
-    dmaFillHalfWords(metaTileRepository.getWallTileId(), mapMemory + room.location.y * mapWidth + room.location.x, sizeof(u16) * room.size.x);
+void renderRoom(Rect2& room, Metamap& metamap, MetaTileRepository& metaTileRepository) {
+    metamap.fill(room.location.x, room.location.y, room.size.x, metaTileRepository.getWallTileId());
     for (u16 y = room.location.y + 1; y < room.location.y + room.size.y; y++) {
-        u16* address = mapMemory + (y * mapWidth) + room.location.x;
-        dmaFillHalfWords(metaTileRepository.getFloorTileId(), address, sizeof(u16) * room.size.x);
+        metamap.fill(room.location.x, y, room.size.x, metaTileRepository.getFloorTileId());
     }
 }
 
@@ -20,7 +20,7 @@ int sign(int x) {
     return x > 0 ? 1 : -1;
 }
 
-void connectRooms(Rect2& source, Rect2& destination, u16* mapMemory, u16 mapWidth, MetaTileRepository& metaTileRepository) {
+void connectRooms(Rect2& source, Rect2& destination, Metamap& metamap, MetaTileRepository& metaTileRepository) {
     Vec2 sourceMidpoint = source.midpoint();
     Vec2 destinationMidpoint = destination.midpoint();
 
@@ -35,22 +35,21 @@ void connectRooms(Rect2& source, Rect2& destination, u16* mapMemory, u16 mapWidt
     }
 
     for (int x = sourceMidpoint.x; x != destinationMidpoint.x; x += sign(destinationMidpoint.x - sourceMidpoint.x)) {
-        mapMemory[anchor.y * mapWidth + x] = metaTileRepository.getFloorTileId();
+        metamap.setTile(x, anchor.y, metaTileRepository.getFloorTileId());
 
-        int a = (anchor.y - 1) * mapWidth + x;
-        if (mapMemory[a] == metaTileRepository.getCeilingTileId())
-            mapMemory[a] = metaTileRepository.getWallTileId();
+        if (metamap.getTile(x, anchor.y - 1) == metaTileRepository.getCeilingTileId())
+            metamap.setTile(x, anchor.y - 1, metaTileRepository.getWallTileId());
     }
     for (int y = sourceMidpoint.y; y != destinationMidpoint.y; y += sign(destinationMidpoint.y - sourceMidpoint.y)) {
-        mapMemory[y * mapWidth + anchor.x] = metaTileRepository.getFloorTileId();
+        metamap.setTile(anchor.x, y, metaTileRepository.getFloorTileId());
     }
 }
 
 Rect2 generateRoom(int mapWidth, int mapHeight) {
-    const int minimumRoomWidth = 6;
-    const int minimumRoomHeight = 4;
-    const int maximumRoomWidth = 10;
-    const int maximumRoomHeight = 9;
+    const int minimumRoomWidth = 8;
+    const int minimumRoomHeight = 7;
+    const int maximumRoomWidth = 16;
+    const int maximumRoomHeight = 14;
 
     Vec2 location(rand() % (mapWidth - minimumRoomWidth), rand() % (mapHeight - minimumRoomHeight));
     Vec2 size(rand() % (maximumRoomWidth - minimumRoomWidth) + minimumRoomWidth, rand() % (maximumRoomHeight - minimumRoomHeight) + minimumRoomHeight);
@@ -66,28 +65,30 @@ Vec2 generateStartingLocation(Rect2 room) {
 }
 
 Map ConnectedRoomsMapGenerator::generateMap() {
-    const u16 width = 32, height = 24;
-    unique_ptr<u16[]> contents = make_unique<u16[]>(width * height);
-
-    const u16 ceilingTileId = metaTileRepository.getCeilingTileId();
+    int roomCount = rand() % 3 + 4;
+    const u16 width = roomCount * 7, height = roomCount * 7;
+    Metamap metamap(width, height);
 
     // Fill memory with void tile
-    dmaFillHalfWords(ceilingTileId, contents.get(), sizeof(u16) * width * height);
+    metamap.fill(metaTileRepository.getCeilingTileId());
 
-    int roomCount = rand() % 3 + 4;
     vector<Rect2> rooms;
     for (int i = 0; i < roomCount; i++) {
         Rect2 room = generateRoom(width, height);
-        renderRoom(room, contents.get(), width, metaTileRepository);
+        renderRoom(room, metamap, metaTileRepository);
         rooms.push_back(room);
     }
 
     // Connect all rooms together - should probably be more selective
-    for (int i = 0; i < rooms.size() - 1; i++) {
-        for (int j = i + 1; j < rooms.size(); j++) {
-            connectRooms(rooms[i], rooms[j], contents.get(), width, metaTileRepository);
+    for (u8 i = 0; i < rooms.size() - 1; i++) {
+        for (u8 j = i + 1; j < rooms.size(); j++) {
+            connectRooms(rooms[i], rooms[j], metamap, metaTileRepository);
         }
     }
 
-    return Map(metaTileRepository, width, height, contents, generateStartingLocation(rooms[0]));
+    // Pop a stair in the first room (for testing)
+    Vec2 stairsLocation = generateStartingLocation(rooms[0]);
+    metamap.setTile(stairsLocation.x, stairsLocation.y, metaTileRepository.getStairsTileId());
+
+    return Map(metaTileRepository, metamap, generateStartingLocation(rooms[0]));
 }

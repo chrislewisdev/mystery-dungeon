@@ -5,8 +5,7 @@
 #include "Core/MemoryBlock.h"
 #include "Core/Vec2.h"
 #include "Core/MetaTileRepository.h"
-
-using namespace std;
+#include "Game/Metamap.h"
 
 #define SCREEN_TILE_WIDTH   16
 #define SCREEN_TILE_HEIGHT  12
@@ -17,14 +16,13 @@ class Map {
     private:
         u16 mapVersion = 0;
         MetaTileRepository& metaTileRepository;
-        u16 metamapWidth, metamapHeight;
-        unique_ptr<u16[]> metamap;
-        unique_ptr<u16[]> virtualMap;
+        Metamap metamap;
+        std::unique_ptr<u16[]> virtualMap;
         Vec2 startingLocation;
         
         bool isInBounds(Vec2 metamapAddress);
     public:
-        Map(MetaTileRepository& metaTileRepository, u16 width, u16 height, unique_ptr<u16[]>& contents, Vec2 startingLocation);
+        Map(MetaTileRepository& metaTileRepository, Metamap metamap, Vec2 startingLocation);
         u16 getMapVersion();
         Vec2 getStartingLocation();
         void flushMap(u16* destination);

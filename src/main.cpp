@@ -18,17 +18,20 @@
 #include "slime.h"
 
 void setupMetaTiles(MetaTileRepository& metaTileRepository) {
-    MetaTile ceiling(0, true);
-    MetaTile floor(1, false);
-    MetaTile wall(2, true);
+    MetaTile ceiling(0);
+    MetaTile floor(1);
+    MetaTile wall(2);
+    MetaTile stairs(3);
 
-    metaTileRepository.store(ceiling);
+    metaTileRepository.store(ceiling.asSolid());
     metaTileRepository.store(floor);
-    metaTileRepository.store(wall);
+    metaTileRepository.store(wall.asSolid());
+    metaTileRepository.store(stairs.asStairs());
 
     metaTileRepository.setCeilingTileId(ceiling.getId());
     metaTileRepository.setFloorTileId(floor.getId());
     metaTileRepository.setWallTileId(wall.getId());
+    metaTileRepository.setStairsTileId(stairs.getId());
 }
 
 int main() {

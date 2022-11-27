@@ -6,7 +6,7 @@
 class MetaTileRepository {
     private:
         std::map<MetaTileId, MetaTile> metaTiles;
-        u16 ceilingTileId, floorTileId, wallTileId;
+        u16 ceilingTileId, floorTileId, wallTileId, stairsTileId;
     public:
         void store(MetaTile metaTile);
         MetaTile& get(MetaTileId id);
@@ -16,4 +16,6 @@ class MetaTileRepository {
         void setFloorTileId(u16 id) { floorTileId = id; }
         u16 getWallTileId() { return wallTileId; }
         void setWallTileId(u16 id) { wallTileId = id; }
+        u16 getStairsTileId() { return stairsTileId; }
+        void setStairsTileId(u16 id) { stairsTileId = id; }
 };
