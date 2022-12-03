@@ -2,6 +2,7 @@
 #include <memory>
 #include <vector>
 #include "Core/Rect2.h"
+#include "Core/Linq.h"
 #include "Game/Metamap.h"
 
 using namespace std;
@@ -75,6 +76,12 @@ Map ConnectedRoomsMapGenerator::generateMap() {
     vector<Rect2> rooms;
     for (int i = 0; i < roomCount; i++) {
         Rect2 room = generateRoom(width, height);
+
+        // Might need to add a try-count here to prevent infinite loops
+        while (any<Rect2>(rooms, [&room](const Rect2& r) { return r.intersects(room); })) {
+            room = generateRoom(width, height);
+        }
+
         renderRoom(room, metamap, metaTileRepository);
         rooms.push_back(room);
     }
