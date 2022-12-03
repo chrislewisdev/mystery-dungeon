@@ -21,6 +21,7 @@ class Map {
         Vec2 startingLocation;
         
         bool isInBounds(Vec2 metamapAddress);
+
     public:
         Map(MetaTileRepository& metaTileRepository, Metamap metamap, Vec2 startingLocation);
         u16 getMapVersion();
@@ -29,4 +30,5 @@ class Map {
         // Gets the tile at x/y USING GAME CO-ORDINATES. 
         MetaTile getTile(Vec2 location);
         void renderMetamap(Vec2 cameraLocation);
+        Map& operator=(Map&& other);
 };

@@ -26,3 +26,11 @@ void Metamap::setTile(u16 x, u16 y, u16 tileId) {
     const int address = y * width + x;
     contents.get()[address] = tileId;
 }
+
+Metamap& Metamap::operator=(Metamap& other) {
+    width = other.width;
+    height = other.height;
+    contents = move(other.contents);
+
+    return *this;
+}

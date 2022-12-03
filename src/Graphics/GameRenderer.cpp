@@ -29,7 +29,7 @@ void GameRenderer::init(const MemoryBlock& bgPalette, const MemoryBlock& spriteP
 void GameRenderer::render(GameState& gameState) {
     // Update map data if changed
     Map& map = gameState.getMap();
-    if (map.getMapVersion() > latestMapVersion) {
+    if (map.getMapVersion() != latestMapVersion) {
         map.flushMap(bgGetMapPtr(backgroundId));
         latestMapVersion = map.getMapVersion();
     }

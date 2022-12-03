@@ -16,4 +16,5 @@ class Metamap {
         void fill(u16 tileId);
         void fill(u16 x, u16 y, u16 length, u16 tileId);
         void setTile(u16 x, u16 y, u16 tileId);
+        Metamap& operator=(Metamap& other);
 };

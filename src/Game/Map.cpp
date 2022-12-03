@@ -59,3 +59,11 @@ bool Map::isInBounds(Vec2 metamapAddress) {
 
     return true;
 }
+
+Map& Map::operator=(Map&& other) {
+    mapVersion++;
+    startingLocation = other.startingLocation;
+    metamap = other.metamap;
+
+    return *this;
+}

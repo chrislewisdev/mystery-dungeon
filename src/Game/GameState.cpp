@@ -52,13 +52,13 @@ void GameState::update(InputState& inputState) {
         turnIndex = getNextTurnIndex();
     }
 
-    // Player-specific checks.
+    // Player-specific checks - might want to make this more generic somehow
     if (currentTurnCharacter.getIsPlayer()) {
         MetaTile tile = map.getTile(currentTurnCharacter.getLocation());
         if (tile.getAttributes().isStairs) {
-            iprintf("Look, stairs!\n");
             // Need to work out how we will reset and re-generate the floor...
-            // map = mapGenerator.generateMap();
+            map = mapGenerator.generateMap();
+            currentTurnCharacter.setLocation(map.getStartingLocation());
         }
     }
 
