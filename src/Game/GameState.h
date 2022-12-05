@@ -5,6 +5,7 @@
 #include "Game/Character.h"
 #include "Game/Map.h"
 #include "Game/MapGenerator.h"
+#include "Game/IdleController.h"
 
 class GameState {
     private:
@@ -12,10 +13,13 @@ class GameState {
         std::vector<Character> characters;
         unsigned int turnIndex = 0;
         int idCounter = 0;
-        int getNextTurnIndex();
         Vec2 camera;
         Character* cameraTarget;
         MapGenerator& mapGenerator;
+        IdleController idleController;
+
+        int getNextTurnIndex();
+        void initialiseFloor();
     public:
         GameState(MapGenerator& mapGenerator);
         Map& getMap();

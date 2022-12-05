@@ -13,7 +13,8 @@ class Rect2 {
         int bottom() const { return location.y + size.y; }
         Vec2 midpoint() const { return location + (size/2); } // Will always round down due to integer division
         bool intersects(const Rect2& other) const {
-            return (this->left() < other.right() && this->right() > other.left()
-                && this->top() < other.bottom() && this->bottom() > other.top());
+            // Using <=/>= here to help clean up room generation. Can change if we want to exclude 'touching' cases.
+            return (this->left() <= other.right() && this->right() >= other.left()
+                && this->top() <= other.bottom() && this->bottom() >= other.top());
         }
 };

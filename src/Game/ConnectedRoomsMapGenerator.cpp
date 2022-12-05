@@ -78,7 +78,8 @@ Map ConnectedRoomsMapGenerator::generateMap() {
         Rect2 room = generateRoom(width, height);
 
         // Might need to add a try-count here to prevent infinite loops
-        while (any<Rect2>(rooms, [&room](const Rect2& r) { return r.intersects(room); })) {
+        auto isIntersecting = [&room](const Rect2& r) { return r.intersects(room); };
+        while (any<Rect2>(rooms, isIntersecting)) {
             room = generateRoom(width, height);
         }
 
@@ -97,5 +98,5 @@ Map ConnectedRoomsMapGenerator::generateMap() {
     Vec2 stairsLocation = generateStartingLocation(rooms[0]);
     metamap.setTile(stairsLocation.x, stairsLocation.y, metaTileRepository.getStairsTileId());
 
-    return Map(metaTileRepository, metamap, generateStartingLocation(rooms[0]));
+    return Map(metaTileRepository, metamap, generateStartingLocation(rooms[0]), rooms);
 }

@@ -5,10 +5,12 @@ using namespace std;
 Map::Map(
     MetaTileRepository& metaTileRepository,
     Metamap metamap,
-    Vec2 startingLocation
+    Vec2 startingLocation,
+    vector<Rect2> rooms
 ) : metaTileRepository(metaTileRepository),
     metamap(metamap),
-    startingLocation(startingLocation)
+    startingLocation(startingLocation),
+    rooms(rooms)
 {
     virtualMap = make_unique<u16[]>(VIRTUAL_MAP_WIDTH * VIRTUAL_MAP_HEIGHT);
     renderMetamap(Vec2());
@@ -16,6 +18,7 @@ Map::Map(
 
 u16 Map::getMapVersion() { return mapVersion; }
 Vec2 Map::getStartingLocation() { return startingLocation; }
+vector<Rect2>& Map::getRooms() { return rooms; }
 
 void Map::flushMap(u16* destination) {
     dmaCopy(virtualMap.get(), destination, sizeof(u16) * VIRTUAL_MAP_WIDTH * VIRTUAL_MAP_HEIGHT);

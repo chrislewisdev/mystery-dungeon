@@ -33,5 +33,8 @@ Map RoomMapGenerator::generateMap() {
         metamap.setTile(x, 2, ceilingTileId);
     }
 
-    return Map(metaTileRepository, metamap, Vec2(5, 5));
+    vector<Rect2> rooms;
+    rooms.push_back(Rect2(Vec2(1, 1), Vec2(width-1, height-1)));
+
+    return Map(metaTileRepository, metamap, Vec2(5, 5), rooms);
 }

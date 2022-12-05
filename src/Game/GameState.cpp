@@ -8,11 +8,26 @@ using namespace std;
 
 GameState::GameState(MapGenerator& mapGenerator): map(mapGenerator.generateMap()), mapGenerator(mapGenerator) {
     characters.reserve(20);
+    // initialiseFloor();
 }
 
 int GameState::getNextTurnIndex() {
     return turnIndex + 1 >= characters.size() ? 0 : turnIndex + 1;
 }
+
+// TODO: move this somewhere to share between here and map generation
+Vec2 generateSpawnPoint(Rect2 room) {
+    return room.location + Vec2(rand() % room.size.x, rand() % (room.size.y - 1) + 1);
+}
+
+void GameState::initialiseFloor() {
+    for (Rect2 room : map.getRooms()) {
+        Vec2 spawnPoint = generateSpawnPoint(room);
+        spawnAt(1, spawnPoint.x, spawnPoint.y, idleController, false);
+    }
+}
+
+// TODO: cleanupFloor
 
 Map& GameState::getMap() {
     return map;
@@ -68,6 +83,9 @@ void GameState::update(InputState& inputState) {
         camera = newCameraLocation;
         map.renderMetamap(camera);
     }
+
+    iprintf("Room count: %d\n", map.getRooms().size());
+    iprintf("Char count: %d", characters.size());
 }
 
 void GameState::setCameraTarget(Character* target) {
