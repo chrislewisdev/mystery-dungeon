@@ -19,8 +19,8 @@ class GameState {
         IdleController idleController;
 
         int getNextTurnIndex();
-        void initialiseFloor();
     public:
+        void initialiseFloor();
         GameState(MapGenerator& mapGenerator);
         Map& getMap();
         std::vector<Character>& getCharacters();

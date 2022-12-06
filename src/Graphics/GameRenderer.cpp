@@ -39,9 +39,14 @@ void GameRenderer::render(GameState& gameState) {
         int oamId = oamRepository.getOrAllocateOamId(character.getId());
         u16* sprite = spriteRepository.getSprite(character.getType());
         Vec2 location = character.getLocation() - gameState.getCameraLocation();
-        oamSet(&oamMain, oamId,
-            location.x * TILE_SIZE, location.y * TILE_SIZE,
-            0, 0, SpriteSize_16x16, SpriteColorFormat_16Color, sprite, 0, false, false, false, false, false);
+        // Would be nice to clean this up a bit considering we need to also free the OAM ids :S
+        if (location.x >= 0 && location.x * TILE_SIZE < 256 && location.y >= 0 && location.y * TILE_SIZE < 192) {
+            oamSet(&oamMain, oamId,
+                location.x * TILE_SIZE, location.y * TILE_SIZE,
+                0, 0, SpriteSize_16x16, SpriteColorFormat_16Color, sprite, 0, false, false, false, false, false);
+        } else {
+            oamClearSprite(&oamMain, oamId);
+        }
     }
     // TODO: Release oam ids for things no longer displayed
 
