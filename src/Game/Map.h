@@ -3,16 +3,12 @@
 #include <nds.h>
 #include <memory>
 #include <vector>
+#include "Core/Const.h"
 #include "Core/MemoryBlock.h"
 #include "Core/Vec2.h"
 #include "Core/Rect2.h"
 #include "Core/MetaTileRepository.h"
 #include "Game/Metamap.h"
-
-#define SCREEN_TILE_WIDTH   16
-#define SCREEN_TILE_HEIGHT  12
-#define VIRTUAL_MAP_WIDTH   32
-#define VIRTUAL_MAP_HEIGHT  24
 
 class Map {
     private:

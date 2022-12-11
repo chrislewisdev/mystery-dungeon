@@ -1,8 +1,8 @@
 #include "GameRenderer.h"
 #include <nds.h>
 #include <stdio.h>
-
-#define TILE_SIZE 16
+#include "Core/Const.h"
+#include "Core/Linq.h"
 
 GameRenderer::GameRenderer(OamState* oamMain) : spriteRepository(oamMain) {}
 
@@ -34,21 +34,32 @@ void GameRenderer::render(GameState& gameState) {
         latestMapVersion = map.getMapVersion();
     }
 
-    for (Character& character : gameState.getCharacters()) {
-        // TODO: camera culling
+    auto isInView = [&gameState](const Character& character) {
+        Vec2 location = character.getLocation() - gameState.getCameraLocation();
+        return location.x >= 0 && location.x < SCREEN_TILE_WIDTH &&
+            location.y >= 0 && location.y < SCREEN_TILE_HEIGHT;
+    };
+
+    auto [visibleCharacters, culledCharacters] = split<Character>(gameState.getCharacters(), isInView);
+
+    for (Character& character : visibleCharacters) {
         int oamId = oamRepository.getOrAllocateOamId(character.getId());
         u16* sprite = spriteRepository.getSprite(character.getType());
         Vec2 location = character.getLocation() - gameState.getCameraLocation();
-        // Would be nice to clean this up a bit considering we need to also free the OAM ids :S
-        if (location.x >= 0 && location.x * TILE_SIZE < 256 && location.y >= 0 && location.y * TILE_SIZE < 192) {
-            oamSet(&oamMain, oamId,
-                location.x * TILE_SIZE, location.y * TILE_SIZE,
-                0, 0, SpriteSize_16x16, SpriteColorFormat_16Color, sprite, 0, false, false, false, false, false);
-        } else {
-            oamClearSprite(&oamMain, oamId);
-        }
+
+        oamSet(&oamMain, oamId,
+            location.x * TILE_SIZE, location.y * TILE_SIZE,
+            0, 0, SpriteSize_16x16, SpriteColorFormat_16Color, sprite, 0, false, false, false, false, false);
     }
-    // TODO: Release oam ids for things no longer displayed
+    for (Character& character : culledCharacters) {
+        int oamId = oamRepository.getOamId(character.getId());
+
+        if (oamId != -1) oamClearSprite(&oamMain, oamId);
+
+        oamRepository.freeOamId(character.getId());
+    }
+
+    iprintf("Free ids: %d\n", oamRepository.getAvailableIdCount());
 
     // Render game world (bottom screen?)
     // Render HUD (top screen?)

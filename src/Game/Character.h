@@ -13,11 +13,11 @@ class Character {
     public:
         Character(int id, int type, Controller& controller, bool isPlayer)
             : id(id), type(type), controller(controller), isPlayer(isPlayer) {}
-        int getId() { return id; }
-        int getType() { return type; }
-        bool getIsPlayer() { return isPlayer; }
-        Vec2 getLocation() { return location; }
+        int getId() const { return id; }
+        int getType() const { return type; }
+        bool getIsPlayer() const { return isPlayer; }
+        Vec2 getLocation() const { return location; }
         void setLocation(int x, int y) { location.x = x; location.y = y; }
         void setLocation(Vec2 l) { location = l; }
-        Controller& getController() { return controller; }
+        Controller& getController() const { return controller; }
 };

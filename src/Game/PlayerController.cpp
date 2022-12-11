@@ -17,9 +17,6 @@ unique_ptr<MoveCommand> move(GameState& gameState, Character& character, int x, 
 }
 
 unique_ptr<Command> PlayerController::getCommand(InputState& inputState, GameState& gameState, Character& character) {
-    Vec2 location = character.getLocation();
-    iprintf("Tile at %d,%d: %u\n", location.x, location.y, gameState.getMap().getTile(location).getId());
-
     if (inputState.left) {
         return move(gameState, character, -1, 0);
     } else if (inputState.right) {

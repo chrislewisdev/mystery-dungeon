@@ -73,11 +73,11 @@ int main() {
 
     while (true) {
         // TODO: Abstract into app states for separation between game/menu logic?
-        consoleClear();
 
         InputState inputState = InputState::getInputState();
         gameState.update(inputState);
         swiWaitForVBlank();
+        consoleClear();
         renderer.render(gameState);
     }
 
