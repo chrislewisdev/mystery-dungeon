@@ -16,6 +16,7 @@
 #include "princess.h"
 #include "goblin.h"
 #include "slime.h"
+#include "title.h"
 
 void setupMetaTiles(MetaTileRepository& metaTileRepository) {
     MetaTile ceiling(0);
@@ -35,6 +36,20 @@ void setupMetaTiles(MetaTileRepository& metaTileRepository) {
 }
 
 int main() {
+    lcdMainOnBottom();
+    
+    videoSetMode(MODE_5_2D);
+
+    vramSetBankA(VRAM_A_MAIN_BG);
+
+    int bgId = bgInit(3, BgType_Bmp16, BgSize_B16_256x256, 0, 0);
+
+    dmaCopy(titleBitmap, bgGetGfxPtr(bgId), titleBitmapLen);
+
+    while (!InputState::getInputState().a) { swiWaitForVBlank(); }
+
+    // return 0;
+
     srand(time(0));
 
     MemoryBlock spritePalette(palette_sweetiePal, palette_sweetiePalLen);
