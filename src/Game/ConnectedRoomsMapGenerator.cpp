@@ -79,7 +79,8 @@ Map ConnectedRoomsMapGenerator::generateMap() {
 
         // Might need to add a try-count here to prevent infinite loops
         auto isIntersecting = [&room](const Rect2& r) { return r.intersects(room); };
-        while (any<Rect2>(rooms, isIntersecting)) {
+        int tries = 0;
+        while (any<Rect2>(rooms, isIntersecting) && tries++ < 10) {
             room = generateRoom(width, height);
         }
 

@@ -1,14 +1,17 @@
 #include "GameState.h"
 #include <stdio.h>
 #include <memory>
+#include "Core/Linq.h"
 #include "Game/Controller.h"
 #include "Game/Command.h"
 
 using namespace std;
 
-GameState::GameState(MapGenerator& mapGenerator): map(mapGenerator.generateMap()), mapGenerator(mapGenerator) {
-    characters.reserve(20);
-    // initialiseFloor();
+GameState::GameState(MapGenerator& mapGenerator): 
+    map(mapGenerator.generateMap()),
+    mapGenerator(mapGenerator)
+{
+    initialiseFloor();
 }
 
 int GameState::getNextTurnIndex() {
@@ -21,13 +24,18 @@ Vec2 generateSpawnPoint(Rect2 room) {
 }
 
 void GameState::initialiseFloor() {
+    // Spawn one enemy per room
     for (Rect2 room : map.getRooms()) {
         Vec2 spawnPoint = generateSpawnPoint(room);
         spawnAt(1, spawnPoint.x, spawnPoint.y, idleController, false);
     }
 }
 
-// TODO: cleanupFloor
+void GameState::cleanupFloor() {
+    // Remove all characters barring the the player
+    characters = filter<Character>(characters,  [](const Character& c) { return c.getIsPlayer(); });
+    turnIndex = 0;
+}
 
 Map& GameState::getMap() {
     return map;
@@ -44,9 +52,9 @@ Character& GameState::spawnAt(int type, int x, int y, Controller& controller, bo
     return characters.back();
 }
 
-Vec2 trackTarget(Vec2 currentLocation, Character* targetCharacter) {
+Vec2 trackTarget(Vec2 currentLocation, Character& targetCharacter) {
     int x = currentLocation.x, y = currentLocation.y;
-    Vec2 target = targetCharacter->getLocation() - Vec2(8, 6);
+    Vec2 target = targetCharacter.getLocation() - Vec2(8, 6);
 
     // Might want to tweak this bounding box at some point
     if (x < target.x - 2) x = target.x - 2;
@@ -69,27 +77,23 @@ void GameState::update(InputState& inputState) {
 
     // Player-specific checks - might want to make this more generic somehow
     if (currentTurnCharacter.getIsPlayer()) {
+        Vec2 newCameraLocation = trackTarget(camera, currentTurnCharacter);
+        if (newCameraLocation != camera) {
+            camera = newCameraLocation;
+            map.renderMetamap(camera);
+        }
+
         MetaTile tile = map.getTile(currentTurnCharacter.getLocation());
         if (tile.getAttributes().isStairs) {
-            // Need to work out how we will reset and re-generate the floor...
             map = mapGenerator.generateMap();
             currentTurnCharacter.setLocation(map.getStartingLocation());
+            cleanupFloor();
+            initialiseFloor();
         }
-    }
-
-    // Update camera
-    Vec2 newCameraLocation = trackTarget(camera, cameraTarget);
-    if (newCameraLocation != camera) {
-        camera = newCameraLocation;
-        map.renderMetamap(camera);
     }
 
     iprintf("Room count: %d\n", map.getRooms().size());
     iprintf("Char count: %d", characters.size());
-}
-
-void GameState::setCameraTarget(Character* target) {
-    cameraTarget = target;
 }
 
 Vec2 GameState::getCameraLocation() {

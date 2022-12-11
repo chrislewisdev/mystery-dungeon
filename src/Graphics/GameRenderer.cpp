@@ -40,26 +40,19 @@ void GameRenderer::render(GameState& gameState) {
             location.y >= 0 && location.y < SCREEN_TILE_HEIGHT;
     };
 
-    auto [visibleCharacters, culledCharacters] = split<Character>(gameState.getCharacters(), isInView);
+    auto visibleCharacters = filter<Character>(gameState.getCharacters(), isInView);
 
+    oamClear(&oamMain, 0, 0);
+    int oamId = 0;
     for (Character& character : visibleCharacters) {
-        int oamId = oamRepository.getOrAllocateOamId(character.getId());
         u16* sprite = spriteRepository.getSprite(character.getType());
         Vec2 location = character.getLocation() - gameState.getCameraLocation();
 
         oamSet(&oamMain, oamId,
             location.x * TILE_SIZE, location.y * TILE_SIZE,
             0, 0, SpriteSize_16x16, SpriteColorFormat_16Color, sprite, 0, false, false, false, false, false);
+        oamId++;
     }
-    for (Character& character : culledCharacters) {
-        int oamId = oamRepository.getOamId(character.getId());
-
-        if (oamId != -1) oamClearSprite(&oamMain, oamId);
-
-        oamRepository.freeOamId(character.getId());
-    }
-
-    iprintf("Free ids: %d\n", oamRepository.getAvailableIdCount());
 
     // Render game world (bottom screen?)
     // Render HUD (top screen?)

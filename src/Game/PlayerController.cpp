@@ -1,5 +1,6 @@
 #include "PlayerController.h"
 #include "Game/MoveCommand.h"
+#include "Game/GameState.h"
 
 #include <stdio.h>
 

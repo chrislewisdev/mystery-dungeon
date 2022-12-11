@@ -67,6 +67,7 @@ Map& Map::operator=(Map&& other) {
     mapVersion++;
     startingLocation = other.startingLocation;
     metamap = other.metamap;
+    rooms = other.rooms;
 
     return *this;
 }

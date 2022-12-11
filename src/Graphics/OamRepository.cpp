@@ -1,5 +1,8 @@
 #include "OamRepository.h"
 #include <nds.h>
+#include "Core/Linq.h"
+
+using namespace std;
 
 OamRepository::OamRepository() {
     for (int i = 0; i < SPRITE_COUNT; i++) {
@@ -36,4 +39,13 @@ void OamRepository::freeOamId(int characterId) {
 
     availableOamIds.push(item->second);
     oamAllocations.erase(item);
+}
+
+void OamRepository::freeUnusedAllocations(vector<int> usedCharacterIds) {
+    for (auto it = oamAllocations.begin(); it != oamAllocations.end(); it++) {
+        if (!contains(usedCharacterIds, it->first)) {
+            availableOamIds.push(it->second);
+            it = oamAllocations.erase(it);
+        }
+    }
 }

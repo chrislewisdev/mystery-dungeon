@@ -2,7 +2,9 @@
 
 #include <queue>
 #include <map>
+#include <vector>
 
+// Not used ATM in favour of just cycling through IDs on every render. Has some bugs.
 class OamRepository {
     private:
         std::queue<int> availableOamIds;
@@ -13,4 +15,5 @@ class OamRepository {
         int getOrAllocateOamId(int characterId);
         int getOamId(int characterId);
         void freeOamId(int characterId);
+        void freeUnusedAllocations(std::vector<int> usedCharacterIds);
 };

@@ -43,24 +43,17 @@ int main() {
     MemoryBlock character(princessTiles, princessTilesLen);
     MemoryBlock goblin(goblinTiles, goblinTilesLen);
     MemoryBlock slime(slimeTiles, slimeTilesLen);
-
-    PlayerController playerController;
     
     MetaTileRepository metaTileRepository;
     setupMetaTiles(metaTileRepository);
 
     ConnectedRoomsMapGenerator mapGenerator(metaTileRepository);
     GameState gameState(mapGenerator);
-    // TODO: Spawn the character based on map info. This should probably be moved into some kind of GameState method to initialise a floor!!!
+    PlayerController playerController;
     Character& player = gameState.spawnAt(0, 4, 4, playerController, true);
     player.setLocation(gameState.getMap().getStartingLocation());
-    gameState.initialiseFloor();
     // gameState.spawnAt(1, 8, 8, playerController);
     // gameState.spawnAt(2, 8, 4, playerController);
-
-    // THIS BREAKS IF THE CHARACTERS VECTOR REALLOCATES AND THE PLAYER MOVES IN MEMORY
-    // Consider: setting an id of the character to track instead of a raw pointer
-    gameState.setCameraTarget(&player);
 
     GameRenderer renderer(&oamMain);
     renderer.init(bgPalette, spritePalette, tiles);

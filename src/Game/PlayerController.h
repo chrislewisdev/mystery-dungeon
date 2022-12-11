@@ -2,7 +2,6 @@
 
 #include "Core/InputState.h"
 #include "Game/Controller.h"
-#include "Game/GameState.h"
 
 class PlayerController : public Controller {
     public:

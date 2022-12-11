@@ -9,7 +9,7 @@ class GameRenderer {
     private:
         int backgroundId = 0;
         u16 latestMapVersion = 0;
-        OamRepository oamRepository;
+        // OamRepository oamRepository;
         SpriteRepository spriteRepository;
     public:
         GameRenderer(OamState* oamMain);
